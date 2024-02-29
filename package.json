@@ -1,0 +1,21 @@
+{
+  "name": "ts-compiler",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --experimental-specifier-resolution=node --loader ts-node/esm App.ts"
+  },
+  "keywords": [],
+  "author": "Super-Kenil",
+  "license": "ISC",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "@types/fs-extra": "^11.0.4"
+  },
+  "dependencies": {
+    "fs-extra": "^11.2.0"
+  }
+}
