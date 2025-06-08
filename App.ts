@@ -9,6 +9,23 @@ function replaceExtension (path: string) {
   return path.replace('.ejs', '')
 }
 
+function extractTitleFromHTML (filePath: string): string | null {
+  try {
+    const content = fs.readFileSync(filePath, 'utf-8')
+    const titleMatch = content.match(/<title>(.*?)<\/title>/i)
+    const title = titleMatch?.[1]?.trim()
+    return title || null
+  } catch {
+    return null
+  }
+}
+
+const getFallbackTitle = (fileName: string): string => replaceExtension(fileName.split('-')
+  .filter((x: string) => x.length > 0)
+  .map((x: string) => x.charAt(0).toUpperCase() + x.slice(1))
+  .join(' '))
+
+
 async function processFiles (directory: string) {
   try {
     const files = await fs.readdir(directory)
@@ -28,7 +45,7 @@ const route = express.Router();
           const fileName = filePath.replace('nodejs/views/', '')
           const singleRouteContent = `
 route.get('${replaceExtension(fileName)}', (req, res, next) => {
-  res.render('${replaceExtension(fileName)}', {title: '${replaceExtension(fileName.split('-').filter((x) => x.length > 0).map((x) => x.charAt(0).toUpperCase() + x.slice(1)).join(' '))}'});
+  res.render('${replaceExtension(fileName)}', {title: '${extractTitleFromHTML(filePath) || getFallbackTitle(fileName)}'});
 })
 `
           await fs.appendFile(routesFilePath, singleRouteContent, { encoding: 'utf-8', })
@@ -51,7 +68,7 @@ route.get('${replaceExtension(fileName)}', (req, res, next) => {
     execSync('find -exec sh -c \'mkdir -p nodejs/routes && touch nodejs/routes/route.js\' \\;')
 
     await processFiles(directoryPath)
-    console.info('Congratulations 🎉 Your routes file is now created')
+    console.info("Congratulations 🎉 Your Nodejs App's routes has been generated......")
   } catch (error) {
     if (error instanceof Error) {
       console.error('Error:', error.message)
